@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.app.api.stock_routes import router as stock_router
 from backend.app.api.agent_routes import router as agent_router
+from backend.app.api.portfolio_routes import router as portfolio_router
 
 app = FastAPI(
     title="Financial AI Agent",
@@ -19,6 +20,7 @@ app.add_middleware(
 
 app.include_router(stock_router)
 app.include_router(agent_router)
+app.include_router(portfolio_router)
 
 @app.get("/")
 def root():
