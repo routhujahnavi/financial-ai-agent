@@ -54,7 +54,6 @@
 ---
 
 ## 📁 Project Structure
-## 📁 Project Structure
 \```
 financial-ai-agent/
 ├── backend/app/
