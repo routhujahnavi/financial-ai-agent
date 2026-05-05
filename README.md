@@ -54,28 +54,26 @@
 ---
 
 ## 📁 Project Structure
+## 📁 Project Structure
+\```
 financial-ai-agent/
-├── backend/
-│   └── app/
-│       ├── main.py                  # FastAPI app entry point
-│       ├── api/
-│       │   ├── stock_routes.py      # Stock data endpoints
-│       │   ├── agent_routes.py      # AI agent endpoints
-│       │   └── portfolio_routes.py  # Portfolio endpoints
-│       ├── agents/
-│       │   └── stock_agent.py       # Groq AI agent logic
-│       └── tools/
-│           └── stock_tool.py        # yfinance data fetcher
-├── frontend/
-│   └── app/
-│       ├── page.tsx                 # Main dashboard page
-│       └── components/
-│           ├── StockChart.tsx       # 30-day price chart
-│           └── Portfolio.tsx        # Portfolio tracker
-├── requirements.txt                 # Python dependencies
-├── render.yaml                      # Render deployment config
+├── backend/app/
+│   ├── main.py
+│   ├── api/
+│   │   ├── stock_routes.py
+│   │   ├── agent_routes.py
+│   │   └── portfolio_routes.py
+│   ├── agents/stock_agent.py
+│   └── tools/stock_tool.py
+├── frontend/app/
+│   ├── page.tsx
+│   └── components/
+│       ├── StockChart.tsx
+│       └── Portfolio.tsx
+├── requirements.txt
+├── render.yaml
 └── README.md
----
+\```
 
 ## 🚀 API Endpoints
 
