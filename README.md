@@ -157,7 +157,19 @@ npm run dev
 
 ## 📸 Screenshots
 > Dashboard with live stocks, AI analysis, 30-day chart and portfolio tracker
+## 📸 Screenshots
 
+### 🏠 Main Dashboard
+![Dashboard](Main Dashboard.png)
+
+### 🤖 AI Stock Analysis
+![AI Analysis](AI Stock Analysis.png)
+
+### 📊 30-Day Price Chart
+![Chart](30-Day Price Chart.png)
+
+### 💼 Portfolio Tracker
+![Portfolio](Portfolio Tracker.png)
 ---
 
 ## 🙏 Acknowledgements
