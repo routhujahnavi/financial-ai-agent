@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import StockChart from "./components/StockChart";
+import Portfolio from "./components/Portfolio";
 
 export default function Home() {
   const [stocks, setStocks] = useState<any[]>([]);
@@ -86,6 +87,9 @@ export default function Home() {
 
       {/* Stock Chart */}
       <StockChart symbol={selectedStock} />
+
+      {/* Portfolio Tracker */}
+      <Portfolio />
 
       {/* Live Stocks */}
       <h2 className="text-xl font-bold mt-8 mb-4">🔴 Live Top Indian Stocks</h2>
