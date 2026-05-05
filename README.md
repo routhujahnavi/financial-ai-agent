@@ -54,25 +54,29 @@
 ---
 
 ## 📁 Project Structure
-\```
+```
 financial-ai-agent/
-├── backend/app/
-│   ├── main.py
-│   ├── api/
-│   │   ├── stock_routes.py
-│   │   ├── agent_routes.py
-│   │   └── portfolio_routes.py
-│   ├── agents/stock_agent.py
-│   └── tools/stock_tool.py
-├── frontend/app/
-│   ├── page.tsx
-│   └── components/
-│       ├── StockChart.tsx
-│       └── Portfolio.tsx
+├── backend/
+│   └── app/
+│       ├── main.py
+│       ├── api/
+│       │   ├── stock_routes.py
+│       │   ├── agent_routes.py
+│       │   └── portfolio_routes.py
+│       ├── agents/
+│       │   └── stock_agent.py
+│       └── tools/
+│           └── stock_tool.py
+├── frontend/
+│   └── app/
+│       ├── page.tsx
+│       └── components/
+│           ├── StockChart.tsx
+│           └── Portfolio.tsx
 ├── requirements.txt
 ├── render.yaml
 └── README.md
-\```
+```
 
 ## 🚀 API Endpoints
 
