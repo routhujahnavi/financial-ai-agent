@@ -53,7 +53,7 @@ export default function Portfolio() {
           type="number"
           className="bg-gray-800 rounded-lg px-4 py-2 text-white placeholder-gray-500 outline-none border border-gray-700 focus:border-green-400 w-24" />
         <input value={buyPrice} onChange={e => setBuyPrice(e.target.value)}
-          placeholder="Buy Price ₹"
+          placeholder="Buy Price"
           type="number"
           className="bg-gray-800 rounded-lg px-4 py-2 text-white placeholder-gray-500 outline-none border border-gray-700 focus:border-green-400 w-32" />
         <button onClick={handleAdd} disabled={loading}
@@ -75,7 +75,7 @@ export default function Portfolio() {
               <p className="text-white font-bold text-lg">₹{portfolio.total_current_value}</p>
             </div>
             <div className="bg-gray-800 rounded-lg p-4 text-center">
-              <p className="text-gray-400 text-sm">Total P&L</p>
+              <p className="text-gray-400 text-sm">Profit / Loss</p>
               <p className={`font-bold text-lg ${portfolio.total_pnl >= 0 ? "text-green-400" : "text-red-400"}`}>
                 {portfolio.total_pnl >= 0 ? "▲" : "▼"} ₹{Math.abs(portfolio.total_pnl)} ({portfolio.total_pnl_percent}%)
               </p>
