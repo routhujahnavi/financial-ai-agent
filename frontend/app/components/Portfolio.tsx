@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 
+const API = "https://financial-ai-agent-ruz1.onrender.com";
+
 export default function Portfolio() {
   const [portfolio, setPortfolio] = useState<any>(null);
   const [symbol, setSymbol] = useState("");
@@ -9,7 +11,7 @@ export default function Portfolio() {
   const [loading, setLoading] = useState(false);
 
   const fetchPortfolio = () => {
-    fetch("http://127.0.0.1:8000/portfolio/summary")
+    fetch(`${API}/portfolio/summary`)
       .then(res => res.json())
       .then(data => setPortfolio(data))
       .catch(() => setPortfolio(null));
@@ -20,7 +22,7 @@ export default function Portfolio() {
   const handleAdd = async () => {
     if (!symbol || !quantity || !buyPrice) return;
     setLoading(true);
-    await fetch("http://127.0.0.1:8000/portfolio/add", {
+    await fetch(`${API}/portfolio/add`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -35,7 +37,7 @@ export default function Portfolio() {
   };
 
   const handleRemove = async (sym: string) => {
-    await fetch(`http://127.0.0.1:8000/portfolio/remove/${sym}`, { method: "DELETE" });
+    await fetch(`${API}/portfolio/remove/${sym}`, { method: "DELETE" });
     fetchPortfolio();
   };
 
@@ -43,18 +45,15 @@ export default function Portfolio() {
     <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 mt-6">
       <h2 className="text-xl font-bold mb-4">💼 My Portfolio</h2>
 
-      {/* Add Stock */}
       <div className="flex gap-3 mb-6 flex-wrap">
         <input value={symbol} onChange={e => setSymbol(e.target.value)}
           placeholder="Symbol (e.g. RELIANCE)"
           className="bg-gray-800 rounded-lg px-4 py-2 text-white placeholder-gray-500 outline-none border border-gray-700 focus:border-green-400 flex-1" />
         <input value={quantity} onChange={e => setQuantity(e.target.value)}
-          placeholder="Qty"
-          type="number"
+          placeholder="Qty" type="number"
           className="bg-gray-800 rounded-lg px-4 py-2 text-white placeholder-gray-500 outline-none border border-gray-700 focus:border-green-400 w-24" />
         <input value={buyPrice} onChange={e => setBuyPrice(e.target.value)}
-          placeholder="Buy Price"
-          type="number"
+          placeholder="Buy Price" type="number"
           className="bg-gray-800 rounded-lg px-4 py-2 text-white placeholder-gray-500 outline-none border border-gray-700 focus:border-green-400 w-32" />
         <button onClick={handleAdd} disabled={loading}
           className="bg-green-500 hover:bg-green-400 disabled:bg-gray-600 text-black font-bold px-5 py-2 rounded-lg transition-colors">
@@ -62,7 +61,6 @@ export default function Portfolio() {
         </button>
       </div>
 
-      {/* Summary */}
       {portfolio && portfolio.holdings && portfolio.holdings.length > 0 ? (
         <>
           <div className="grid grid-cols-3 gap-4 mb-6">
@@ -82,7 +80,6 @@ export default function Portfolio() {
             </div>
           </div>
 
-          {/* Holdings */}
           <div className="space-y-3">
             {portfolio.holdings.map((h: any) => (
               <div key={h.symbol} className="bg-gray-800 rounded-lg p-4 flex justify-between items-center">

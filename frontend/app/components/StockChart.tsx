@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 
+const API = "https://financial-ai-agent-ruz1.onrender.com";
+
 export default function StockChart({ symbol }: { symbol: string }) {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -9,7 +11,7 @@ export default function StockChart({ symbol }: { symbol: string }) {
   useEffect(() => {
     if (!symbol) return;
     setLoading(true);
-    fetch(`http://127.0.0.1:8000/stocks/${symbol}/history`)
+    fetch(`${API}/stocks/${symbol}/history`)
       .then(res => res.json())
       .then(d => {
         setData(d.history || []);

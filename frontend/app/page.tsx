@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import StockChart from "./components/StockChart";
 import Portfolio from "./components/Portfolio";
 
+const API = "https://financial-ai-agent-ruz1.onrender.com";
+
 export default function Home() {
   const [stocks, setStocks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -12,7 +14,7 @@ export default function Home() {
   const [selectedStock, setSelectedStock] = useState("RELIANCE.NS");
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/stocks/indian/top")
+    fetch(`${API}/stocks/indian/top`)
       .then(res => res.json())
       .then(data => {
         setStocks(data);
@@ -29,7 +31,7 @@ export default function Home() {
     setAnalyzing(true);
     setAnalysis("");
     try {
-      const res = await fetch("http://127.0.0.1:8000/agent/analyze", {
+      const res = await fetch(`${API}/agent/analyze`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query })
@@ -44,14 +46,11 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-gray-950 text-white p-8">
-
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-green-400">📈 Financial AI Agent</h1>
         <p className="text-gray-400 mt-2">AI-powered Indian Stock Market Research Platform</p>
       </div>
 
-      {/* AI Search */}
       <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 mb-6">
         <h2 className="text-xl font-bold mb-4">🤖 Ask AI About Any Stock</h2>
         <div className="flex gap-4">
@@ -85,16 +84,12 @@ export default function Home() {
         )}
       </div>
 
-      {/* Stock Chart */}
       <StockChart symbol={selectedStock} />
-
-      {/* Portfolio Tracker */}
       <Portfolio />
 
-      {/* Live Stocks */}
       <h2 className="text-xl font-bold mt-8 mb-4">🔴 Live Top Indian Stocks</h2>
       {loading ? (
-        <p className="text-gray-400">Loading live data... (make sure backend is running!)</p>
+        <p className="text-gray-400">Loading live data...</p>
       ) : (
         <div className="grid grid-cols-2 gap-4">
           {stocks.map((stock) => (
@@ -128,7 +123,6 @@ export default function Home() {
           ))}
         </div>
       )}
-
     </main>
   );
 }
