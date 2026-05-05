@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import StockChart from "./components/StockChart";
 
 export default function Home() {
   const [stocks, setStocks] = useState<any[]>([]);
@@ -7,12 +8,17 @@ export default function Home() {
   const [query, setQuery] = useState("");
   const [analysis, setAnalysis] = useState("");
   const [analyzing, setAnalyzing] = useState(false);
+  const [selectedStock, setSelectedStock] = useState("RELIANCE.NS");
 
   useEffect(() => {
     fetch("http://127.0.0.1:8000/stocks/indian/top")
       .then(res => res.json())
       .then(data => {
         setStocks(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
         setLoading(false);
       });
   }, []);
@@ -21,25 +27,31 @@ export default function Home() {
     if (!query.trim()) return;
     setAnalyzing(true);
     setAnalysis("");
-    const res = await fetch("http://127.0.0.1:8000/agent/analyze", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query })
-    });
-    const data = await res.json();
-    setAnalysis(data.analysis);
+    try {
+      const res = await fetch("http://127.0.0.1:8000/agent/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query })
+      });
+      const data = await res.json();
+      setAnalysis(data.analysis);
+    } catch (err) {
+      setAnalysis("Error connecting to backend. Make sure the server is running!");
+    }
     setAnalyzing(false);
   };
 
   return (
     <main className="min-h-screen bg-gray-950 text-white p-8">
+
+      {/* Header */}
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-green-400">📈 Financial AI Agent</h1>
         <p className="text-gray-400 mt-2">AI-powered Indian Stock Market Research Platform</p>
       </div>
 
       {/* AI Search */}
-      <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 mb-8">
+      <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 mb-6">
         <h2 className="text-xl font-bold mb-4">🤖 Ask AI About Any Stock</h2>
         <div className="flex gap-4">
           <input
@@ -72,16 +84,22 @@ export default function Home() {
         )}
       </div>
 
+      {/* Stock Chart */}
+      <StockChart symbol={selectedStock} />
+
       {/* Live Stocks */}
-      <h2 className="text-xl font-bold mb-4">🔴 Live Top Indian Stocks</h2>
+      <h2 className="text-xl font-bold mt-8 mb-4">🔴 Live Top Indian Stocks</h2>
       {loading ? (
-        <p className="text-gray-400">Loading live data...</p>
+        <p className="text-gray-400">Loading live data... (make sure backend is running!)</p>
       ) : (
         <div className="grid grid-cols-2 gap-4">
           {stocks.map((stock) => (
             <div
               key={stock.symbol}
-              onClick={() => setQuery(`Should I buy ${stock.symbol.replace('.NS', '')}?`)}
+              onClick={() => {
+                setQuery(`Should I buy ${stock.symbol.replace('.NS', '')}?`);
+                setSelectedStock(stock.symbol);
+              }}
               className="bg-gray-900 rounded-xl p-6 border border-gray-800 hover:border-green-400 transition-colors cursor-pointer"
             >
               <div className="flex justify-between items-start">
@@ -101,11 +119,12 @@ export default function Home() {
                 <span>PE: {stock.pe_ratio}</span>
                 <span>52W H: ₹{stock["52_week_high"]}</span>
               </div>
-              <p className="text-xs text-gray-600 mt-2">Click to analyze →</p>
+              <p className="text-xs text-gray-600 mt-2">Click to analyze + view chart →</p>
             </div>
           ))}
         </div>
       )}
+
     </main>
   );
 }
