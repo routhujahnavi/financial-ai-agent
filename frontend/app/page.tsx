@@ -1,48 +1,78 @@
-
 "use client";
 import { useEffect, useState } from "react";
-import { fetchTopStocks } from "../src/api";
 
 export default function Home() {
   const [stocks, setStocks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState("");
+  const [analysis, setAnalysis] = useState("");
+  const [analyzing, setAnalyzing] = useState(false);
 
   useEffect(() => {
-    fetchTopStocks().then((data) => {
-      setStocks(data);
-      setLoading(false);
-    });
+    fetch("http://127.0.0.1:8000/stocks/indian/top")
+      .then(res => res.json())
+      .then(data => {
+        setStocks(data);
+        setLoading(false);
+      });
   }, []);
+
+  const handleAnalyze = async () => {
+    if (!query.trim()) return;
+    setAnalyzing(true);
+    setAnalysis("");
+    const res = await fetch("http://127.0.0.1:8000/agent/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query })
+    });
+    const data = await res.json();
+    setAnalysis(data.analysis);
+    setAnalyzing(false);
+  };
 
   return (
     <main className="min-h-screen bg-gray-950 text-white p-8">
-
-      {/* Header */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-green-400">
-          📈 Financial AI Agent
-        </h1>
-        <p className="text-gray-400 mt-2">
-          AI-powered Indian Stock Market Research Platform
-        </p>
+        <h1 className="text-4xl font-bold text-green-400">📈 Financial AI Agent</h1>
+        <p className="text-gray-400 mt-2">AI-powered Indian Stock Market Research Platform</p>
       </div>
 
-      {/* Search Bar */}
+      {/* AI Search */}
       <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 mb-8">
-        <h2 className="text-xl font-bold mb-4">🔍 Ask AI About Any Stock</h2>
+        <h2 className="text-xl font-bold mb-4">🤖 Ask AI About Any Stock</h2>
         <div className="flex gap-4">
           <input
             type="text"
-            placeholder="e.g. Analyze RELIANCE for me..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="e.g. Should I buy Reliance? Analyze TCS for me..."
             className="flex-1 bg-gray-800 rounded-lg px-4 py-3 text-white placeholder-gray-500 outline-none border border-gray-700 focus:border-green-400"
+            onKeyDown={(e) => e.key === "Enter" && handleAnalyze()}
           />
-          <button className="bg-green-500 hover:bg-green-400 text-black font-bold px-6 py-3 rounded-lg transition-colors">
-            Analyze
+          <button
+            onClick={handleAnalyze}
+            disabled={analyzing}
+            className="bg-green-500 hover:bg-green-400 disabled:bg-gray-600 text-black font-bold px-6 py-3 rounded-lg transition-colors"
+          >
+            {analyzing ? "Analyzing..." : "Analyze"}
           </button>
         </div>
+
+        {analysis && (
+          <div className="mt-4 p-4 bg-gray-800 rounded-lg border border-green-400">
+            <p className="text-green-400 font-bold mb-2">🤖 AI Analysis:</p>
+            <p className="text-gray-200 leading-relaxed">{analysis}</p>
+          </div>
+        )}
+        {analyzing && (
+          <div className="mt-4 p-4 bg-gray-800 rounded-lg">
+            <p className="text-yellow-400">⏳ AI is analyzing the stock data...</p>
+          </div>
+        )}
       </div>
 
-      {/* Live Stock Cards */}
+      {/* Live Stocks */}
       <h2 className="text-xl font-bold mb-4">🔴 Live Top Indian Stocks</h2>
       {loading ? (
         <p className="text-gray-400">Loading live data...</p>
@@ -51,6 +81,7 @@ export default function Home() {
           {stocks.map((stock) => (
             <div
               key={stock.symbol}
+              onClick={() => setQuery(`Should I buy ${stock.symbol.replace('.NS', '')}?`)}
               className="bg-gray-900 rounded-xl p-6 border border-gray-800 hover:border-green-400 transition-colors cursor-pointer"
             >
               <div className="flex justify-between items-start">
@@ -59,9 +90,7 @@ export default function Home() {
                   <p className="text-gray-400 text-sm">{stock.symbol}</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-bold text-white">
-                    ₹{stock.current_price}
-                  </p>
+                  <p className="font-bold text-white">₹{stock.current_price}</p>
                   <p className={stock.change_percent >= 0 ? "text-green-400 text-sm" : "text-red-400 text-sm"}>
                     {stock.change_percent >= 0 ? "▲" : "▼"} {stock.change_percent}%
                   </p>
@@ -72,11 +101,11 @@ export default function Home() {
                 <span>PE: {stock.pe_ratio}</span>
                 <span>52W H: ₹{stock["52_week_high"]}</span>
               </div>
+              <p className="text-xs text-gray-600 mt-2">Click to analyze →</p>
             </div>
           ))}
         </div>
       )}
-
     </main>
   );
 }
