@@ -3,7 +3,7 @@
 > An AI-powered Indian Stock Market Research Platform built with FastAPI, Next.js, and Groq LLM
 
 ## 🌐 Live Demo
-🚀 **[https://financial-ai-agent-roan.vercel.app](https://financial-ai-agent-roan.vercel.app)**
+🚀 **[https://financial-ai-agent-6x47w7cgx-rjsantoshi24-1155s-projects.vercel.app](https://financial-ai-agent-6x47w7cgx-rjsantoshi24-1155s-projects.vercel.app)**
 
 ---
 
@@ -17,8 +17,10 @@
 
 ## ✨ Features
 - 🤖 **AI Stock Analysis** — Ask any question about Indian stocks and get real AI-powered analysis
+- 🔍 **Stock Search** — Search for any stock ticker and view live data instantly
 - 📊 **30-Day Price Charts** — Interactive line charts with hover tooltips for any stock
-- 💼 **Portfolio Tracker** — Add stocks, track live P&L (Profit & Loss) in real time
+- 🔐 **User Authentication** — Secure Sign-Up and Log-In powered by Clerk
+- 💼 **Personal Portfolio Tracker** — Build a private portfolio, track live P&L (Profit & Loss) in real time
 - 🔴 **Live Stock Data** — Real-time prices, volume, PE ratio, 52-week high for top Indian stocks
 - ⚡ **Instant Analysis** — Powered by Groq's llama-3.3-70b model for fast responses
 
@@ -152,6 +154,8 @@ npm run dev
 | Variable | Description | Where to get |
 |----------|-------------|--------------|
 | `GROQ_API_KEY` | Groq LLM API key | [console.groq.com](https://console.groq.com) |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk Auth Publishable Key | [clerk.com](https://clerk.com) |
+| `CLERK_SECRET_KEY` | Clerk Auth Secret Key | [clerk.com](https://clerk.com) |
 
 ---
 
