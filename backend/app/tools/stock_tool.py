@@ -27,7 +27,8 @@ def get_stock_price(symbol: str) -> dict:
             return PRICE_CACHE[symbol]['data']
         
         stock = yf.Ticker(symbol)
-        info = stock.info
+        
+        # stock.info is heavily rate-limited by Yahoo. Use history and fast_info instead.
         hist = stock.history(period="1d")
         
         if hist.empty:
@@ -38,18 +39,30 @@ def get_stock_price(symbol: str) -> dict:
         change = round(current_price - open_price, 2)
         change_pct = round((change / open_price) * 100, 2) if open_price else 0
         
+        # Hardcode common Indian stock names to avoid info lookup
+        common_names = {
+            "RELIANCE.NS": "Reliance Industries",
+            "TCS.NS": "Tata Consultancy Services",
+            "HDFCBANK.NS": "HDFC Bank",
+            "INFY.NS": "Infosys",
+            "ICICIBANK.NS": "ICICI Bank",
+            "HINDUNILVR.NS": "Hindustan Unilever",
+            "WIPRO.NS": "Wipro",
+            "ITC.NS": "ITC Limited"
+        }
+        
         result = {
             "symbol": symbol,
-            "name": info.get("longName", symbol),
+            "name": common_names.get(symbol, symbol),
             "current_price": round(current_price, 2),
             "open_price": round(open_price, 2),
             "change": change,
             "change_percent": change_pct,
             "volume": int(hist['Volume'].iloc[-1]),
-            "market_cap": int(info.get("marketCap", 0)),
-            "pe_ratio": clean(info.get("trailingPE", 0)),
-            "52_week_high": clean(info.get("fiftyTwoWeekHigh", 0)),
-            "52_week_low": clean(info.get("fiftyTwoWeekLow", 0)),
+            "market_cap": 0, # Removed to prevent rate limits
+            "pe_ratio": 0,   # Removed to prevent rate limits
+            "52_week_high": 0, # Removed to prevent rate limits
+            "52_week_low": 0, # Removed to prevent rate limits
             "timestamp": datetime.now().isoformat()
         }
         
