@@ -104,4 +104,8 @@ def get_multiple_stocks(symbols: list) -> list:
     for symbol in symbols:
         data = get_stock_price(symbol)
         results.append(data)
+        
+        # Add a delay between requests to avoid rate limits from Yahoo Finance
+        time.sleep(1)
+        
     return results
