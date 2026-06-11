@@ -35,6 +35,7 @@
 | TypeScript | Type safety |
 | Tailwind CSS | Styling |
 | Recharts | Stock price charts |
+| Clerk | Authentication |
 
 ### Backend
 | Technology | Purpose |
@@ -177,6 +178,7 @@ npm run dev
 ---
 
 ## 🙏 Acknowledgements
+- [Clerk](https://clerk.com) — for the authentication and user management
 - [Groq](https://groq.com) — for the fast LLM API
 - [yfinance](https://github.com/ranaroussi/yfinance) — for free stock data
 - [Vercel](https://vercel.com) — for free frontend hosting
