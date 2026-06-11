@@ -1,11 +1,12 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from pydantic import BaseModel
 from backend.app.tools.stock_tool import get_stock_price
 
 router = APIRouter(prefix="/portfolio", tags=["Portfolio"])
 
-# In-memory storage (works for demo)
-portfolio = {}
+# In-memory storage per user
+# format: { "user_id": { "SYMBOL": { "quantity": int, "buy_price": float } } }
+portfolios = {}
 
 class AddStockRequest(BaseModel):
     symbol: str
@@ -13,28 +14,36 @@ class AddStockRequest(BaseModel):
     buy_price: float
 
 @router.post("/add")
-def add_stock(req: AddStockRequest):
+def add_stock(req: AddStockRequest, user_id: str = Query(...)):
     symbol = req.symbol.upper()
-    portfolio[symbol] = {
+    
+    if user_id not in portfolios:
+        portfolios[user_id] = {}
+        
+    portfolios[user_id][symbol] = {
         "symbol": symbol,
         "quantity": req.quantity,
         "buy_price": req.buy_price
     }
-    return {"message": f"{symbol} added to portfolio", "portfolio": portfolio}
+    return {"message": f"{symbol} added to portfolio", "portfolio": portfolios[user_id]}
 
 @router.get("/summary")
-def get_portfolio():
+def get_portfolio(user_id: str = Query(...)):
+    if user_id not in portfolios:
+        return {"holdings": [], "total_invested": 0, "total_current_value": 0, "total_pnl": 0, "total_pnl_percent": 0}
+        
+    user_portfolio = portfolios[user_id]
     result = []
     total_invested = 0
     total_current = 0
 
-    for symbol, data in portfolio.items():
+    for symbol, data in user_portfolio.items():
         live = get_stock_price(symbol)
         current_price = live.get("current_price", data["buy_price"])
         invested = data["buy_price"] * data["quantity"]
         current_value = current_price * data["quantity"]
         pnl = current_value - invested
-        pnl_pct = (pnl / invested) * 100
+        pnl_pct = (pnl / invested) * 100 if invested > 0 else 0
 
         result.append({
             "symbol": symbol,
@@ -59,9 +68,9 @@ def get_portfolio():
     }
 
 @router.delete("/remove/{symbol}")
-def remove_stock(symbol: str):
+def remove_stock(symbol: str, user_id: str = Query(...)):
     symbol = symbol.upper()
-    if symbol in portfolio:
-        del portfolio[symbol]
+    if user_id in portfolios and symbol in portfolios[user_id]:
+        del portfolios[user_id][symbol]
         return {"message": f"{symbol} removed"}
     return {"message": "Symbol not found"}

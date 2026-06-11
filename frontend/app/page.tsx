@@ -1,7 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
+import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import StockChart from "./components/StockChart";
 import Portfolio from "./components/Portfolio";
+import SearchStock from "./components/SearchStock";
 
 const API = "https://financial-ai-agent-ruz1.onrender.com";
 
@@ -46,10 +48,26 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-gray-950 text-white p-8">
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold text-green-400">📈 Financial AI Agent</h1>
-        <p className="text-gray-400 mt-2">AI-powered Indian Stock Market Research Platform</p>
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-4xl font-bold text-green-400">📈 Financial AI Agent</h1>
+          <p className="text-gray-400 mt-2">AI-powered Indian Stock Market Research Platform</p>
+        </div>
+        <div className="flex items-center gap-4">
+          <SignedOut>
+            <SignInButton mode="modal">
+              <button className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-6 py-2 rounded-lg transition-colors">
+                Sign In
+              </button>
+            </SignInButton>
+          </SignedOut>
+          <SignedIn>
+            <UserButton afterSignOutUrl="/" />
+          </SignedIn>
+        </div>
       </div>
+
+      <SearchStock onSelect={(symbol) => setSelectedStock(symbol)} />
 
       <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 mb-6">
         <h2 className="text-xl font-bold mb-4">🤖 Ask AI About Any Stock</h2>
@@ -85,7 +103,22 @@ export default function Home() {
       </div>
 
       <StockChart symbol={selectedStock} />
-      <Portfolio />
+
+      <SignedIn>
+        <Portfolio />
+      </SignedIn>
+
+      <SignedOut>
+        <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 mt-6 text-center">
+          <h2 className="text-xl font-bold mb-2">💼 Build Your Portfolio</h2>
+          <p className="text-gray-400 mb-4">Sign in to add stocks to your personal portfolio and track your profits in real-time.</p>
+          <SignInButton mode="modal">
+            <button className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-6 py-2 rounded-lg transition-colors">
+              Sign In to Build Portfolio
+            </button>
+          </SignInButton>
+        </div>
+      </SignedOut>
 
       <h2 className="text-xl font-bold mt-8 mb-4">🔴 Live Top Indian Stocks</h2>
       {loading ? (

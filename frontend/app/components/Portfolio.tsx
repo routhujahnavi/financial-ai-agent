@@ -1,9 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useUser } from "@clerk/nextjs";
 
 const API = "https://financial-ai-agent-ruz1.onrender.com";
 
 export default function Portfolio() {
+  const { user, isLoaded } = useUser();
   const [portfolio, setPortfolio] = useState<any>(null);
   const [symbol, setSymbol] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -11,18 +13,23 @@ export default function Portfolio() {
   const [loading, setLoading] = useState(false);
 
   const fetchPortfolio = () => {
-    fetch(`${API}/portfolio/summary`)
+    if (!user) return;
+    fetch(`${API}/portfolio/summary?user_id=${user.id}`)
       .then(res => res.json())
       .then(data => setPortfolio(data))
       .catch(() => setPortfolio(null));
   };
 
-  useEffect(() => { fetchPortfolio(); }, []);
+  useEffect(() => { 
+    if (isLoaded && user) {
+      fetchPortfolio(); 
+    }
+  }, [isLoaded, user]);
 
   const handleAdd = async () => {
-    if (!symbol || !quantity || !buyPrice) return;
+    if (!symbol || !quantity || !buyPrice || !user) return;
     setLoading(true);
-    await fetch(`${API}/portfolio/add`, {
+    await fetch(`${API}/portfolio/add?user_id=${user.id}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -37,9 +44,12 @@ export default function Portfolio() {
   };
 
   const handleRemove = async (sym: string) => {
-    await fetch(`${API}/portfolio/remove/${sym}`, { method: "DELETE" });
+    if (!user) return;
+    await fetch(`${API}/portfolio/remove/${sym}?user_id=${user.id}`, { method: "DELETE" });
     fetchPortfolio();
   };
+
+  if (!isLoaded || !user) return null;
 
   return (
     <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 mt-6">
