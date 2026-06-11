@@ -8,16 +8,6 @@ PRICE_CACHE = {}
 HISTORY_CACHE = {}
 CACHE_TTL = 300  # 5 minutes cache
 
-# Configure a custom session to bypass Yahoo Finance bot blocking
-def get_custom_session():
-    session = requests.Session()
-    session.headers.update({
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Accept": "*/*",
-        "Accept-Language": "en-US,en;q=0.9",
-    })
-    return session
-
 def clean(val):
     """Convert numpy types to plain Python types"""
     try:
@@ -36,8 +26,7 @@ def get_stock_price(symbol: str) -> dict:
         if symbol in PRICE_CACHE and current_time - PRICE_CACHE[symbol]['time'] < CACHE_TTL:
             return PRICE_CACHE[symbol]['data']
         
-        session = get_custom_session()
-        stock = yf.Ticker(symbol, session=session)
+        stock = yf.Ticker(symbol)
         info = stock.info
         hist = stock.history(period="1d")
         
@@ -81,8 +70,7 @@ def get_stock_history(symbol: str, days: int = 30) -> dict:
         if cache_key in HISTORY_CACHE and current_time - HISTORY_CACHE[cache_key]['time'] < CACHE_TTL:
             return HISTORY_CACHE[cache_key]['data']
         
-        session = get_custom_session()
-        stock = yf.Ticker(symbol, session=session)
+        stock = yf.Ticker(symbol)
         hist = stock.history(period=f"{days}d")
         
         if hist.empty:
