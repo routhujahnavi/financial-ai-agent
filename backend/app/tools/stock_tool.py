@@ -1,12 +1,6 @@
 import yfinance as yf
 from datetime import datetime
 import time
-import requests
-
-session = requests.Session()
-session.headers.update({
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
-})
 
 # Simple memory cache
 PRICE_CACHE = {}
@@ -31,7 +25,7 @@ def get_stock_price(symbol: str) -> dict:
         if symbol in PRICE_CACHE and current_time - PRICE_CACHE[symbol]['time'] < CACHE_TTL:
             return PRICE_CACHE[symbol]['data']
         
-        stock = yf.Ticker(symbol, session=session)
+        stock = yf.Ticker(symbol)
         info = stock.info
         hist = stock.history(period="1d")
         
@@ -75,7 +69,7 @@ def get_stock_history(symbol: str, days: int = 30) -> dict:
         if cache_key in HISTORY_CACHE and current_time - HISTORY_CACHE[cache_key]['time'] < CACHE_TTL:
             return HISTORY_CACHE[cache_key]['data']
         
-        stock = yf.Ticker(symbol, session=session)
+        stock = yf.Ticker(symbol)
         hist = stock.history(period=f"{days}d")
         
         if hist.empty:
