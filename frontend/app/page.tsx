@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
+import { SignInButton, Show, UserButton } from '@clerk/nextjs';
 import StockChart from "./components/StockChart";
 import Portfolio from "./components/Portfolio";
 import SearchStock from "./components/SearchStock";
@@ -54,16 +54,16 @@ export default function Home() {
           <p className="text-gray-400 mt-2">AI-powered Indian Stock Market Research Platform</p>
         </div>
         <div className="flex items-center gap-4">
-          <SignedOut>
+          <Show when="signed-out">
             <SignInButton mode="modal">
               <button className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-6 py-2 rounded-lg transition-colors">
                 Sign In
               </button>
             </SignInButton>
-          </SignedOut>
-          <SignedIn>
-            <UserButton afterSignOutUrl="/" />
-          </SignedIn>
+          </Show>
+          <Show when="signed-in">
+            <UserButton />
+          </Show>
         </div>
       </div>
 
@@ -104,11 +104,11 @@ export default function Home() {
 
       <StockChart symbol={selectedStock} />
 
-      <SignedIn>
+      <Show when="signed-in">
         <Portfolio />
-      </SignedIn>
+      </Show>
 
-      <SignedOut>
+      <Show when="signed-out">
         <div className="bg-gray-900 rounded-xl p-6 border border-gray-800 mt-6 text-center">
           <h2 className="text-xl font-bold mb-2">💼 Build Your Portfolio</h2>
           <p className="text-gray-400 mb-4">Sign in to add stocks to your personal portfolio and track your profits in real-time.</p>
@@ -118,7 +118,7 @@ export default function Home() {
             </button>
           </SignInButton>
         </div>
-      </SignedOut>
+      </Show>
 
       <h2 className="text-xl font-bold mt-8 mb-4">🔴 Live Top Indian Stocks</h2>
       {loading ? (
