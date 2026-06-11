@@ -1,9 +1,22 @@
 import yfinance as yf
 from datetime import datetime
+import time
+import requests
+
+session = requests.Session()
+session.headers.update({
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+})
+
+# Simple memory cache
+PRICE_CACHE = {}
+HISTORY_CACHE = {}
+CACHE_TTL = 300  # 5 minutes cache
 
 def clean(val):
     """Convert numpy types to plain Python types"""
     try:
+        if str(val) == 'nan': return 0
         return float(val)
     except:
         return val
@@ -13,8 +26,12 @@ def get_stock_price(symbol: str) -> dict:
     try:
         if "." not in symbol:
             symbol = symbol + ".NS"
+            
+        current_time = time.time()
+        if symbol in PRICE_CACHE and current_time - PRICE_CACHE[symbol]['time'] < CACHE_TTL:
+            return PRICE_CACHE[symbol]['data']
         
-        stock = yf.Ticker(symbol)
+        stock = yf.Ticker(symbol, session=session)
         info = stock.info
         hist = stock.history(period="1d")
         
@@ -24,9 +41,9 @@ def get_stock_price(symbol: str) -> dict:
         current_price = clean(hist['Close'].iloc[-1])
         open_price = clean(hist['Open'].iloc[-1])
         change = round(current_price - open_price, 2)
-        change_pct = round((change / open_price) * 100, 2)
+        change_pct = round((change / open_price) * 100, 2) if open_price else 0
         
-        return {
+        result = {
             "symbol": symbol,
             "name": info.get("longName", symbol),
             "current_price": round(current_price, 2),
@@ -40,6 +57,9 @@ def get_stock_price(symbol: str) -> dict:
             "52_week_low": clean(info.get("fiftyTwoWeekLow", 0)),
             "timestamp": datetime.now().isoformat()
         }
+        
+        PRICE_CACHE[symbol] = {'time': current_time, 'data': result}
+        return result
     except Exception as e:
         return {"error": str(e)}
 
@@ -49,8 +69,13 @@ def get_stock_history(symbol: str, days: int = 30) -> dict:
     try:
         if "." not in symbol:
             symbol = symbol + ".NS"
+            
+        cache_key = f"{symbol}_{days}"
+        current_time = time.time()
+        if cache_key in HISTORY_CACHE and current_time - HISTORY_CACHE[cache_key]['time'] < CACHE_TTL:
+            return HISTORY_CACHE[cache_key]['data']
         
-        stock = yf.Ticker(symbol)
+        stock = yf.Ticker(symbol, session=session)
         hist = stock.history(period=f"{days}d")
         
         if hist.empty:
@@ -67,11 +92,14 @@ def get_stock_history(symbol: str, days: int = 30) -> dict:
                 "volume": int(row['Volume'])
             })
         
-        return {
+        result = {
             "symbol": symbol,
             "days": days,
             "history": history
         }
+        
+        HISTORY_CACHE[cache_key] = {'time': current_time, 'data': result}
+        return result
     except Exception as e:
         return {"error": str(e)}
 
