@@ -7,14 +7,6 @@
 
 ---
 
-## 👥 Team
-| Name | Role | Responsibilities |
-|------|------|-----------------|
-| Routhu Jahnavi | Backend Developer | FastAPI, AI Agent, Stock Data, Deployment |
-| Cherishma | Frontend Developer | Next.js UI, Charts, Portfolio UI, Deployment |
-
----
-
 ## ✨ Features
 - 🤖 **AI Stock Analysis** — Ask any question about Indian stocks and get real AI-powered analysis
 - 🔍 **Stock Search** — Search for any stock ticker and view live data instantly
